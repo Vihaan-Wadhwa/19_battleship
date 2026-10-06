@@ -65,12 +65,12 @@ retaining responsibility for understanding and testing the result.
 ## Submission checklist
 
 - [x] Task 1 completed and the original defect was reproduced and fixed.
-- [ ] Tasks 2–4 completed and tested.
+- [x] Tasks 2–4 completed and tested.
 - [x] Boundary and invalid-input cases tested.
 - [x] No unnecessary external dependencies added.
 - [x] No persistent storage added.
 - [x] Code remains understandable and modular.
-- [ ] Complete LLM chat-history link included.
+- [x] Complete LLM chat-history link included.
 
 ## Folder structure
 
