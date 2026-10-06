@@ -1,4 +1,4 @@
-from board import Board
+from board import Board, MISS, HIT, SUNK, REPEAT
 from ai import AI
 
 
@@ -7,20 +7,33 @@ def to_label(pos):
     return f"{pos[0] + 1},{pos[1] + 1}"
 
 
+def describe(outcome, ship):
+    if outcome == SUNK:
+        return f"HIT! Sunk the {ship.name}!"
+    if outcome == HIT:
+        return "HIT!"
+    return "MISS!"
+
+
 class Battleship:
     def __init__(self):
         self.player = Board()
         self.enemy = Board()
-        self.ai = AI()
+        self.ai = AI(Board.SIZE)
         self._setup()
 
     def _setup(self):
-        self.player.place_ship({(1, 1), (1, 2), (1, 3)})
-        self.enemy.place_ship({(2, 2), (2, 3), (2, 4)})
+        self.player.place_fleet_randomly()
+        self.enemy.place_fleet_randomly()
 
     def show(self):
-        print("\nYour shots are coordinates like 2,3.")
-        print("Ship cells remaining:", len(self.enemy.ships - self.enemy.shots))
+        print("\nEnemy waters:")
+        print(self.enemy.render(reveal_ships=False))
+        print("\nYour fleet:")
+        print(self.player.render(reveal_ships=True))
+        print(f"Enemy ships afloat: {len(self.enemy.ships_afloat())}/{len(self.enemy.ships)}"
+              f"   Your ships afloat: {len(self.player.ships_afloat())}/{len(self.player.ships)}")
+        print("Enter a shot as row,col (e.g. 2,3) or q to quit.")
 
     def run(self):
         print("Battleship")
@@ -35,20 +48,21 @@ class Battleship:
             except ValueError:
                 print("Use row,col.")
                 continue
-            if not (0 <= pos[0] < Board.SIZE and 0 <= pos[1] < Board.SIZE):
+            if not Board.in_bounds(pos):
                 print("Outside board.")
                 continue
-            if pos in self.enemy.shots:
+            outcome, ship = self.enemy.fire(pos)
+            if outcome == REPEAT:
                 print("Already fired there.")
                 continue
-            print("HIT!" if self.enemy.fire(pos) else "MISS!")
+            print(describe(outcome, ship))
             if self.enemy.all_sunk():
-                print("You sank the fleet.")
+                print("You sank the whole enemy fleet. You win!")
                 return
 
             ai_pos = self.ai.choose()
-            print("AI fired at", to_label(ai_pos))
-            print("AI scored a hit." if self.player.fire(ai_pos) else "AI missed.")
+            outcome, ship = self.player.fire(ai_pos)
+            print("AI fired at", to_label(ai_pos), "-", describe(outcome, ship))
             if self.player.all_sunk():
-                print("The AI sank your fleet.")
+                print("The AI sank your whole fleet. You lose.")
                 return
