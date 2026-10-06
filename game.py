@@ -12,7 +12,9 @@ def describe(outcome, ship):
         return f"HIT! Sunk the {ship.name}!"
     if outcome == HIT:
         return "HIT!"
-    return "MISS!"
+    if outcome == MISS:
+        return "MISS!"
+    raise ValueError(f"no feedback for outcome {outcome!r}")
 
 
 class Battleship:
@@ -35,11 +37,25 @@ class Battleship:
               f"   Your ships afloat: {len(self.player.ships_afloat())}/{len(self.player.ships)}")
         print("Enter a shot as row,col (e.g. 2,3) or q to quit.")
 
+    def _shoot(self, board, pos, prefix=""):
+        """Fire one real shot and print its hit/miss/sunk feedback exactly once.
+
+        This is the only place shots are resolved and reported. A repeated
+        shot is not a real shot, so it gets no hit/miss feedback.
+        """
+        outcome, ship = board.fire(pos)
+        if outcome != REPEAT:
+            print(prefix + describe(outcome, ship))
+        return outcome, ship
+
     def run(self):
         print("Battleship")
         while True:
             self.show()
-            raw = input("> ").strip().lower()
+            try:
+                raw = input("> ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                raw = "q"
             if raw == "q":
                 return
             try:
@@ -51,11 +67,10 @@ class Battleship:
             if not Board.in_bounds(pos):
                 print("Outside board.")
                 continue
-            outcome, ship = self.enemy.fire(pos)
+            outcome, _ = self._shoot(self.enemy, pos)
             if outcome == REPEAT:
                 print("Already fired there.")
                 continue
-            print(describe(outcome, ship))
             if self.enemy.all_sunk():
                 print("You sank the whole enemy fleet. You win!")
                 return
@@ -64,9 +79,8 @@ class Battleship:
             if ai_pos is None:
                 print("The AI has no cells left to fire at. Game over.")
                 return
-            outcome, ship = self.player.fire(ai_pos)
+            outcome, ship = self._shoot(self.player, ai_pos, f"AI fired at {to_label(ai_pos)} - ")
             self.ai.record(ai_pos, outcome, ship)
-            print("AI fired at", to_label(ai_pos), "-", describe(outcome, ship))
             if self.player.all_sunk():
                 print("The AI sank your whole fleet. You lose.")
                 return

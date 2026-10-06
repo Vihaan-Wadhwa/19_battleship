@@ -66,10 +66,10 @@ retaining responsibility for understanding and testing the result.
 
 - [x] Task 1 completed and the original defect was reproduced and fixed.
 - [ ] Tasks 2–4 completed and tested.
-- [ ] Boundary and invalid-input cases tested.
-- [ ] No unnecessary external dependencies added.
-- [ ] No persistent storage added.
-- [ ] Code remains understandable and modular.
+- [x] Boundary and invalid-input cases tested.
+- [x] No unnecessary external dependencies added.
+- [x] No persistent storage added.
+- [x] Code remains understandable and modular.
 - [ ] Complete LLM chat-history link included.
 
 ## Folder structure
