@@ -64,7 +64,7 @@ retaining responsibility for understanding and testing the result.
 
 ## Submission checklist
 
-- [ ] Task 1 completed and the original defect was reproduced and fixed.
+- [x] Task 1 completed and the original defect was reproduced and fixed.
 - [ ] Tasks 2–4 completed and tested.
 - [ ] Boundary and invalid-input cases tested.
 - [ ] No unnecessary external dependencies added.

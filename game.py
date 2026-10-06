@@ -2,6 +2,11 @@ from board import Board
 from ai import AI
 
 
+def to_label(pos):
+    """Format a 0-based (row, col) cell as the 1-based text players type."""
+    return f"{pos[0] + 1},{pos[1] + 1}"
+
+
 class Battleship:
     def __init__(self):
         self.player = Board()
@@ -15,7 +20,7 @@ class Battleship:
 
     def show(self):
         print("\nYour shots are coordinates like 2,3.")
-        print("Ship cells remaining:", len(self.enemy.ships - self.player.shots))
+        print("Ship cells remaining:", len(self.enemy.ships - self.enemy.shots))
 
     def run(self):
         print("Battleship")
@@ -33,7 +38,7 @@ class Battleship:
             if not (0 <= pos[0] < Board.SIZE and 0 <= pos[1] < Board.SIZE):
                 print("Outside board.")
                 continue
-            if pos in self.player.shots:
+            if pos in self.enemy.shots:
                 print("Already fired there.")
                 continue
             print("HIT!" if self.enemy.fire(pos) else "MISS!")
@@ -42,14 +47,8 @@ class Battleship:
                 return
 
             ai_pos = self.ai.choose()
-
-            # representation consistent through the whole flow.
-            try:
-                ar, ac = map(int, ai_pos.split(","))
-                player_pos = (ar, ac)
-            except ValueError:
-                player_pos = None
-            if player_pos is not None:
-                print("AI fired at", ai_pos)
-                if player_pos in self.player.ships:
-                    print("AI scored a hit.")
+            print("AI fired at", to_label(ai_pos))
+            print("AI scored a hit." if self.player.fire(ai_pos) else "AI missed.")
+            if self.player.all_sunk():
+                print("The AI sank your fleet.")
+                return
