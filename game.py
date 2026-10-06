@@ -61,7 +61,11 @@ class Battleship:
                 return
 
             ai_pos = self.ai.choose()
+            if ai_pos is None:
+                print("The AI has no cells left to fire at. Game over.")
+                return
             outcome, ship = self.player.fire(ai_pos)
+            self.ai.record(ai_pos, outcome, ship)
             print("AI fired at", to_label(ai_pos), "-", describe(outcome, ship))
             if self.player.all_sunk():
                 print("The AI sank your whole fleet. You lose.")
